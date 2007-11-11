@@ -2,6 +2,7 @@ Changes
 MANIFEST
 META.yml # Will be created by "make dist"
 Makefile.PL
+Build.PL
 README
 lib/File/Ignore.pm
 t/00-load.t
