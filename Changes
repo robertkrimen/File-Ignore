@@ -1,2 +1,7 @@
+0.020 Sunday November 11 14:30:55 PST 2007:
+    - Finished bulk of tests
+    - Finished bulk of documentation
+    - Added "->include" and "->exclude" functionality
+
 0.010_1 Friday November 09 15:08:11 PST 2007:
     - Initial release
