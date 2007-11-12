@@ -9,11 +9,11 @@ File::Ignore - Ignore files that are good to ignore
 
 =head1 VERSION
 
-Version 0.020
+Version 0.021
 
 =cut
 
-our $VERSION = '0.020';
+our $VERSION = '0.021';
 
 
 =head1 SYNOPSIS
@@ -220,6 +220,7 @@ my @_ignore;
         *.ln:rsync
         core:core,rsync
         .svn/:revision,svn,rsync
+        .sw[p-z]:vim,swap
     ));
 }
 

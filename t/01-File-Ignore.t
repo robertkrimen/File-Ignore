@@ -47,6 +47,9 @@ apple.elc
 apple.ln
 core
 .svn/
+apple.swp
+apple.swr
+apple.swz
 ));
 $template->test(ok => undef);
 
