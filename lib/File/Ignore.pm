@@ -95,6 +95,7 @@ Returns a list of what is ignoreable. Currently, this is:
     *.ln         .*\.ln        rsync              
     core         core          core rsync         
     .svn/        \.svn         revision rsync svn
+    .sw[p-z]     \.sw[p-z]     swap vim  
 
 The above list was taken from C<rsync -C>
 
