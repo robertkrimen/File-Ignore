@@ -94,7 +94,7 @@ Returns a list of what is ignoreable. Currently, this is:
     *.elc        .*\.elc       rsync              
     *.ln         .*\.ln        rsync              
     core         core          core rsync         
-    .svn/        \.svn         revision rsync svn
+    .svn/*       \.svn/.*      revision rsync svn
     .sw[p-z]     \.sw[p-z]     swap vim  
 
 The above list was taken from C<rsync -C>
@@ -173,10 +173,11 @@ sub _make_entry {
     $prune = 1 if s/\/$//;
     my ($prunere, $pruneqr);
     if ($prune) {
-        $prunere = "(?:^|\\/)$_(?:$|\\/)";
+        $prunere = "(?:^|\\/)$_(?:\$|\\/)";
         $pruneqr = qr/$prunere/;
     }
     
+#    $_ =~ s/\/\*/(\/.*|\\\$)/g;
     $_ =~ s/\$/\\\$/g;
     $_ =~ s/\./\\./g;
     $_ =~ s/\*/\.\*/g;
@@ -232,7 +233,7 @@ my @_prune = grep { $_->{prune} } @_ignore;
 sub ignore {
     shift if $_[0] && $_[0] eq __PACKAGE__;
     my $self = __PACKAGE__;
-    my $option = {};
+    my $option = { pruneable => 1 };
     $option = shift if ref $_[0] eq "HASH";
     my $file = shift;
 
@@ -242,7 +243,7 @@ sub ignore {
 sub include {
     shift if $_[0] && $_[0] eq __PACKAGE__;
     my $self = __PACKAGE__;
-    my $option = {};
+    my $option = { pruneable => 1 };
     $option = shift if ref $_[0] eq "HASH";
     my $each = ref $_[0] eq "ARRAY" ? $_[0] : [ @_ ];
 
@@ -252,7 +253,7 @@ sub include {
 sub exclude {
     shift if $_[0] && $_[0] eq __PACKAGE__;
     my $self = __PACKAGE__;
-    my $option = {};
+    my $option = { pruneable => 1 };
     $option = shift if ref $_[0] eq "HASH";
     my $each = ref $_[0] eq "ARRAY" ? $_[0] : [ @_ ];
 
@@ -262,7 +263,7 @@ sub exclude {
 sub _collect {
     my $self = shift;
     my $collect_ignoreable = shift;
-    my $option = {};
+    my $option = { pruneable => 1 };
     $option = shift if ref $_[0] eq "HASH";
     my $each = shift;
 

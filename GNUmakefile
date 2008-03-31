@@ -9,3 +9,7 @@ Makefile: Makefile.PL
 	perl $<
 
 clean: distclean
+
+reset: clean
+	perl Makefile.PL
+	make -f Makefile test

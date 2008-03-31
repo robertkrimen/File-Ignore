@@ -109,4 +109,9 @@ $template->test(not_ok => undef);
 
 cmp_deeply(File::Ignore->include(qw(src/RCS apple.Z doc/apple.txt tags .svn banana.html core)), [qw(doc/apple.txt banana.html)]);
 
-cmp_deeply(File::Ignore->exclude(qw/RCS apple.Z apple.txt tags .svn banana.html core/), [qw/RCS apple.Z tags .svn core/]);
+cmp_deeply(File::Ignore->exclude({ pruneable => 1 }, qw{RCS apple.Z apple.txt tags .svn .svn/entries .svn/format banana.html core}),
+    [qw{RCS apple.Z tags .svn .svn/entries .svn/format core}]);
+
+ok(File::Ignore->ignore({ pruneable => 1 }, $_), "ignore $_") for qw{.svn .svn/entries .svn/format};
+
+ok(File::Ignore->ignore($_), "ignore $_") for qw{.svn .svn/entries .svn/format};
