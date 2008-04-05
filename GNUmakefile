@@ -2,7 +2,7 @@
 
 all: test
 
-dist distclean test tardist: Makefile
+install dist distclean test tardist: Makefile
 	make -f $< $@
 
 Makefile: Makefile.PL
