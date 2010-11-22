@@ -1,52 +1,128 @@
-File-Ignore
+NAME
+    File::Ignore - Ignore files that are good to ignore
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+VERSION
+    Version 0.021
 
-A README file is required for CPAN modules since CPAN extracts the README
-file from a module distribution so that people browsing the archive
-can use it to get an idea of the module's uses. It is usually a good idea
-to provide version information here so that people can decide whether
-fixes for the module are worth downloading.
+SYNOPSIS
+        use File::Ignore;
 
+        if (File::Ignore->ignore($file)) {
+            # ... Skip ...
+        }
+        else {
+            # Continue to process...
+        }
 
-INSTALLATION
+        my $good = File::Ignore->include(qw(src/RCS apple.Z doc/apple.txt tags .svn banana.html core));
+        for my $file (@$good) {
+            # doc/apple.txt
+            #  banana.html
+        }
 
-To install this module, run the following commands:
+        my $bad = File::Ignore->exclude([qw(src/RCS apple.Z doc/apple.txt tags .svn banana.html core)]);
+        for my $file (@$bad) {
+            # src/RCS
+            # apple.Z
+            # tags
+            # .svn
+            # core
+        }
 
-	perl Makefile.PL
-	make
-	make test
-	make install
+METHODS
+  File::Ignore->ignore( <file> )
+    Returns true if <file> is one of the ignoreable.
 
-SUPPORT AND DOCUMENTATION
+  File::Ignore->include( <file>, <file>, ... )
+    Returns an array reference of each <file> that is NOT ignoreable (should
+    be included)
 
-After installing, you can find documentation for this module with the
-perldoc command.
+  File::Ignore->exclude( <file>, <file>, ... )
+    Returns an array reference of each <file> that IS ignoreable (should be
+    excluded)
 
-    perldoc File::Ignore
+  File::Ignore->ignoreable
+    Returns a list of what is ignoreable. Currently, this is:
 
-You can also look for information at:
+                     regexp        category           
 
-    RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-Ignore
+        RCS/         RCS           rcs revision rsync 
+        SCCS/        SCCS          revision rsync sccs
+        CVS/         CVS           cvs revision rsync 
+        CVS.adm      CVS\.adm      cvs revision rsync 
+        RCSLOG       RCSLOG        rcs revision rsync 
+        cvslog.*     cvslog\..*    cvs revision rsync 
+        tags         tags          ctags etags rsync  
+        TAGS         TAGS          ctags etags rsync  
+        .make.state  \.make\.state make rsync         
+        .nse_depinfo \.nse_depinfo rsync              
+        *~           .*~           rsync              
+        #*           #.*           rsync              
+        .#*          \.#.*         rsync              
+        ,*           ,.*           rsync              
+        _$*          _\$.*         rsync              
+        *$           .*\$          rsync              
+        *.old        .*\.old       backup rsync       
+        *.bak        .*\.bak       backup rsync       
+        *.BAK        .*\.BAK       backup rsync       
+        *.orig       .*\.orig      backup rsync       
+        *.rej        .*\.rej       patch rsync        
+        .del-*       \.del-.*      rsync              
+        *.a          .*\.a         object rsync       
+        *.olb        .*\.olb       object rsync       
+        *.o          .*\.o         object rsync       
+        *.obj        .*\.obj       object rsync       
+        *.so         .*\.so        object rsync       
+        .exe         \.exe         object rsync       
+        *.Z          .*\.Z         rsync              
+        *.elc        .*\.elc       rsync              
+        *.ln         .*\.ln        rsync              
+        core         core          core rsync         
+        .svn/        \.svn         revision rsync svn
+        .sw[p-z]     \.sw[p-z]     swap vim
 
-    AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/File-Ignore
+    The above list was taken from "rsync -C"
 
-    CPAN Ratings
-        http://cpanratings.perl.org/d/File-Ignore
+    Let me know if you have any thoughts on additions to this list or
+    categorization.
 
-    Search CPAN
-        http://search.cpan.org/dist/File-Ignore
+AUTHOR
+    Robert Krimen, "<rkrimen at cpan.org>"
 
+BUGS
+    Please report any bugs or feature requests to "bug-file-ignore at
+    rt.cpan.org", or through the web interface at
+    <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=File-Ignore>. I will be
+    notified, and then you'll automatically be notified of progress on your
+    bug as I make changes.
 
-COPYRIGHT AND LICENCE
+SUPPORT
+    You can find documentation for this module with the perldoc command.
 
-Copyright (C) 2007 Robert Krimen
+        perldoc File::Ignore
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+    You can also look for information at:
+
+    *   RT: CPAN's request tracker
+
+        <http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-Ignore>
+
+    *   AnnoCPAN: Annotated CPAN documentation
+
+        <http://annocpan.org/dist/File-Ignore>
+
+    *   CPAN Ratings
+
+        <http://cpanratings.perl.org/d/File-Ignore>
+
+    *   Search CPAN
+
+        <http://search.cpan.org/dist/File-Ignore>
+
+ACKNOWLEDGEMENTS
+COPYRIGHT & LICENSE
+    Copyright 2007 Robert Krimen, all rights reserved.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
 

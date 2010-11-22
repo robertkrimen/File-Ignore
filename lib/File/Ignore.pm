@@ -1,20 +1,19 @@
 package File::Ignore;
+# ABSTRACT: Ignore files that are good to ignore
 
 use warnings;
 use strict;
 
-=head1 NAME
+sub test {
+    my $self = shift;
+    my $test = shift;
+    my $path = shift;
+    
+}
 
-File::Ignore - Ignore files that are good to ignore
+1;
 
-=head1 VERSION
-
-Version 0.021
-
-=cut
-
-our $VERSION = '0.021';
-
+__END__
 
 =head1 SYNOPSIS
 
@@ -42,7 +41,7 @@ our $VERSION = '0.021';
         # core
     }
 
-=head1 METHODS
+=head1 USAGE
 
 =head2 File::Ignore->ignore( <file> )
 
@@ -94,66 +93,10 @@ Returns a list of what is ignoreable. Currently, this is:
     *.elc        .*\.elc       rsync              
     *.ln         .*\.ln        rsync              
     core         core          core rsync         
-    .svn/*       \.svn/.*      revision rsync svn
+    .svn/        \.svn         revision rsync svn
     .sw[p-z]     \.sw[p-z]     swap vim  
 
 The above list was taken from C<rsync -C>
-
-Let me know if you have any thoughts on additions to this list or categorization.
-
-=head1 AUTHOR
-
-Robert Krimen, C<< <rkrimen at cpan.org> >>
-
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-file-ignore at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=File-Ignore>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-
-
-
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc File::Ignore
-
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-Ignore>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/File-Ignore>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/File-Ignore>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/File-Ignore>
-
-=back
-
-
-=head1 ACKNOWLEDGEMENTS
-
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2007 Robert Krimen, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
-
 
 =cut
 
@@ -173,11 +116,10 @@ sub _make_entry {
     $prune = 1 if s/\/$//;
     my ($prunere, $pruneqr);
     if ($prune) {
-        $prunere = "(?:^|\\/)$_(?:\$|\\/)";
+        $prunere = "(?:^|\\/)$_(?:$|\\/)";
         $pruneqr = qr/$prunere/;
     }
     
-#    $_ =~ s/\/\*/(\/.*|\\\$)/g;
     $_ =~ s/\$/\\\$/g;
     $_ =~ s/\./\\./g;
     $_ =~ s/\*/\.\*/g;
@@ -187,7 +129,7 @@ sub _make_entry {
 
 my @_ignore;
 {
-    no warnings qw/qw/;
+    no warnings qw/ qw /;
     push @_ignore, map { _make_entry $_ } (qw(
         RCS/:revision,rcs,rsync
         SCCS/:revision,sccs,rsync
@@ -233,7 +175,7 @@ my @_prune = grep { $_->{prune} } @_ignore;
 sub ignore {
     shift if $_[0] && $_[0] eq __PACKAGE__;
     my $self = __PACKAGE__;
-    my $option = { pruneable => 1 };
+    my $option = {};
     $option = shift if ref $_[0] eq "HASH";
     my $file = shift;
 
@@ -243,7 +185,7 @@ sub ignore {
 sub include {
     shift if $_[0] && $_[0] eq __PACKAGE__;
     my $self = __PACKAGE__;
-    my $option = { pruneable => 1 };
+    my $option = {};
     $option = shift if ref $_[0] eq "HASH";
     my $each = ref $_[0] eq "ARRAY" ? $_[0] : [ @_ ];
 
@@ -253,7 +195,7 @@ sub include {
 sub exclude {
     shift if $_[0] && $_[0] eq __PACKAGE__;
     my $self = __PACKAGE__;
-    my $option = { pruneable => 1 };
+    my $option = {};
     $option = shift if ref $_[0] eq "HASH";
     my $each = ref $_[0] eq "ARRAY" ? $_[0] : [ @_ ];
 
@@ -263,7 +205,7 @@ sub exclude {
 sub _collect {
     my $self = shift;
     my $collect_ignoreable = shift;
-    my $option = { pruneable => 1 };
+    my $option = {};
     $option = shift if ref $_[0] eq "HASH";
     my $each = shift;
 
@@ -320,45 +262,4 @@ sub ignoreable {
     return [ @_ignore ];
 }
 
-1; # End of File::Ignore
-
-__END__
-
-sub check {
-    shift if $_[0] && $_[0] eq __PACKAGE__;
-    my $option = {};
-    $option = shift if ref $_[0] eq "HASH";
-    my $path = shift;
-
-    $path = "$path";
-    $path =~ s/\/$//;
-    my ($volume, $directory_path, $basename) = File::Spec->splitpath($path);
-
-    my (@ign_basename, @ign_path, @ign_prune);
-    if (my $tag = $option->{tag}) {
-        @ign_basename = map { $_->{tag}->{$tag} } @_basename;
-        @ign_path = map { $_->{tag}->{$tag} } @_path;
-        @ign_prune = map { $_->{tag}->{$tag} } @_prune;
-    }
-    else {
-        @ign_basename = @_basename;
-        @ign_path = @_path;
-        @ign_prune = @_prune;
-    }
-
-    for (@ign_basename) {
-        return 1 if $basename =~ $_->{qr};
-    }
-
-    for (@ign_path) {
-        return 1 if $path =~ $_->{qr};
-    }
-
-    return 0 unless $option->{pruneable} || $option->{prune} || $option->{pruned};
-
-    for (@ign_prune) {
-        return 1 if $path =~ $_->{pruneqr};
-    }
-
-    return 0;
-}
+1;
