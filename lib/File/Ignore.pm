@@ -4,10 +4,15 @@ package File::Ignore;
 use warnings;
 use strict;
 
+use File::Spec;
+
 sub test {
     my $self = shift;
     my $test = shift;
     my $path = shift;
+
+    my ( undef, $folder, $file ) = File::Spec->splitpath( $path );
+    my @folder = File::Spec->splitdir( $folder );
     
 }
 
